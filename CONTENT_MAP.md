@@ -3,7 +3,7 @@
 Generated from the seed. Every item is editable in the app after loading.
 
 
-## Robotics Foundations (SmartBrains Arduino)
+## Robotics Foundations (Codemove Arduino)
 *Beginner · 4 modules · 17 lessons · 5 quizzes (37 questions) · about 2 h 48 min*
 
 
@@ -17,7 +17,7 @@ Generated from the seed. Every item is editable in the app after loading.
 
 **Module 2: Lesson 2: Simulating a simple circuit (Tinkercad)**
 
-- 2.1 Open the SmartBrains Tinkercad dashboard (8 min) – needs client check
+- 2.1 Open the Codemove Tinkercad dashboard (8 min) – needs client check
 - 2.2 Find and place your components (10 min)
 - 2.3 Wire the simple circuit (15 min) – needs client check
 - 2.4 Run the simulation (6 min)

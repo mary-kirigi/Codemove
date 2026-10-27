@@ -12,35 +12,35 @@ The client notes connect the motor driver to pins D8, D9, D10 and D11 (Lesson 3)
 *Where:* Module 3 › Wire the drive system; Module 4 › Wire the ultrasonic sensor; Module 7 › Wire the motors and the sensors; Module 7 › Wire the pump and add the main switch
 
 
-**2. Robotics Foundations (SmartBrains Arduino)**
+**2. Robotics Foundations (Codemove Arduino)**
 
 The Lesson 2 quiz in the client notes says the anode is connected to 3.3V, but these steps connect it through a resistor to a digital pin. Confirm which wiring is correct and make the steps and quiz match.
 
 *Where:* Module 2 › Wire the simple circuit
 
 
-**3. Robotics Foundations (SmartBrains Arduino)**
+**3. Robotics Foundations (Codemove Arduino)**
 
 This lesson connects the LEDs straight between 3.3V and GND with no resistor, while Lesson 2 uses resistors. Please test on the real kit and confirm whether a resistor is needed.
 
 *Where:* Module 3 › Place and connect the LEDs
 
 
-**4. Robotics Foundations (SmartBrains Arduino)**
+**4. Robotics Foundations (Codemove Arduino)**
 
 Add the school's Tinkercad login link and login steps. The client notes do not include them.
 
-*Where:* Module 2 › Open the SmartBrains Tinkercad dashboard
+*Where:* Module 2 › Open the Codemove Tinkercad dashboard
 
 
-**5. Robotics Foundations (SmartBrains Arduino)**
+**5. Robotics Foundations (Codemove Arduino)**
 
 The notes say "Connect 3 pins to the port to all the GNDs". Confirm how many GND pins are used and add a picture.
 
 *Where:* Module 4 › Wire the LEDs
 
 
-**6. Robotics Foundations (SmartBrains Arduino)**
+**6. Robotics Foundations (Codemove Arduino)**
 
 The notes only say "picture of the codes to be inserted". This Arduino sketch was drafted to match pins 8, 9 and 10. Check it against the client's mBlock version and upload a picture of the blocks.
 
@@ -98,7 +98,7 @@ The notes say "drag the code blocks as instructed by the illustration (image to 
 
 ## Pictures still needed
 
-- Robotics Foundations (SmartBrains Arduino): 10 placeholders (search the lessons for "Picture to be added")
+- Robotics Foundations (Codemove Arduino): 10 placeholders (search the lessons for "Picture to be added")
 - Coding Foundations (Scratch, HTML and CSS): 0 placeholders (search the lessons for "Picture to be added")
 - Project: Automatic Fire Extinguisher Robotic Car: 7 placeholders (search the lessons for "Picture to be added")
 - Project: Automatic Hand Sanitizer Dispenser: 5 placeholders (search the lessons for "Picture to be added")

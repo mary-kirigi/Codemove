@@ -74,7 +74,7 @@ export default function Landing({ signedIn }) {
             <h2>What you can learn</h2>
             <p className="lp-lead">Lessons open as your teacher releases them, so everyone moves forward together.</p>
             <div className="lp-grid">
-              <div className="lp-card"><span className="lp-tag">Course</span><h3>Robotics Foundations</h3><p>Meet the SmartBrains Arduino kit, simulate a circuit in Tinkercad and build a real LED circuit.</p></div>
+              <div className="lp-card"><span className="lp-tag">Course</span><h3>Robotics Foundations</h3><p>Meet the Codemove Arduino kit, simulate a circuit in Tinkercad and build a real LED circuit.</p></div>
               <div className="lp-card"><span className="lp-tag">Course</span><h3>Coding Foundations</h3><p>Start with Scratch blocks, then write real HTML and CSS and make your own personal website.</p></div>
               <div className="lp-card"><span className="lp-tag">Project</span><h3>Fire Extinguisher Robotic Car</h3><p>Build a car that finds a flame with a sensor, avoids obstacles and puts the fire out.</p></div>
               <div className="lp-card"><span className="lp-tag">Project</span><h3>Automatic Hand Sanitizer Dispenser</h3><p>Make a touch-free dispenser using an ultrasonic sensor, a servo motor and an Arduino.</p></div>
@@ -87,7 +87,7 @@ export default function Landing({ signedIn }) {
             <h2>Questions people ask</h2>
             <details><summary>Who is CodeMove Kenya for?</summary><p>Anyone who wants to learn coding and robotics from the beginning. Schools, clubs and teachers can also use it to run a class.</p></details>
             <details><summary>Do I need to know anything first?</summary><p>No. The first lessons explain the basics, and each lesson builds on the one before.</p></details>
-            <details><summary>Do I need special equipment?</summary><p>The coding lessons only need a phone or computer with internet. The robotics courses use the SmartBrains Arduino kit, and you can begin by simulating circuits online.</p></details>
+            <details><summary>Do I need special equipment?</summary><p>The coding lessons only need a phone or computer with internet. The robotics courses use the Codemove Arduino kit, and you can begin by simulating circuits online.</p></details>
             <details><summary>Does it work on a phone?</summary><p>Yes. The platform is designed to work on phones, tablets and computers.</p></details>
             <details><summary>Why can’t I see some lessons yet?</summary><p>Your teacher decides when each lesson opens, and may give your class a short code to unlock it. This keeps everyone learning at the same pace.</p></details>
             <details><summary>How do I get started?</summary><p>Press “Start learning”, then sign up with your email or Google account. Teachers can contact us to set up a class.</p></details>
