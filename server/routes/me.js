@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { sb } from '../supabase.js';
 import { h } from '../middleware.js';
+import { cleanUsername, usernameProblem } from '../lib/username.js';   // NEW
 export const me = Router();
 const cnt = (t, uid, extra = {}) => sb.from(t).select('*', { count: 'exact', head: true }).eq('user_id', uid).match(extra);
 
@@ -19,8 +20,14 @@ me.patch('/me', h(async (req, res) => {
   const patch = { updated_at: new Date().toISOString() };
   if (['light', 'dark'].includes(req.body.theme_preference)) patch.theme_preference = req.body.theme_preference;
   if (typeof req.body.full_name === 'string' && req.body.full_name.trim()) patch.full_name = req.body.full_name.trim();
+  // NEW: choose (or clear) the username used to log in
+  if ('username' in req.body) {
+    const u = cleanUsername(req.body.username);
+    if (u === '') patch.username = null;
+    else { const bad = usernameProblem(u); if (bad) return res.status(400).json({ error: bad }); patch.username = u; }
+  }
   const { error } = await sb.from('users').update(patch).eq('id', req.user.id);
-  if (error) throw error;
+  if (error) { if (error.code === '23505') return res.status(400).json({ error: 'That username is already taken.' }); throw error; }
   res.json({ ok: true });
 }));
 

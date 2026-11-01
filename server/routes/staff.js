@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { sb } from '../supabase.js';
 import { h, requireRole } from '../middleware.js';
 import { toEditable } from '../lib/lessonText.js';   // NEW
+import { cleanUsername, usernameProblem } from '../lib/username.js';   // NEW
 import { isOpen, makeCode } from '../lib/visibility.js';   // NEW
 import { invalidateScores } from '../lib/scores.js';   // NEW: totals change when lessons are hidden/shown
 export const staff = Router();
@@ -161,7 +162,7 @@ staff.post('/staff/courses/:id/gate', teacher, h(async (req, res) => {
 
 /* ---------- Admin ---------- */
 staff.get('/admin/users', admin, h(async (_req, res) => {
-  const { data, error } = await sb.from('users').select('id,full_name,email,role,is_active,created_at').order('created_at', { ascending: false });
+  const { data, error } = await sb.from('users').select('id,full_name,email,username,role,is_active,created_at').order('created_at', { ascending: false });   // CHANGED: + username
   if (error) throw error;
   res.json(data);
 }));
@@ -170,9 +171,13 @@ staff.post('/admin/users', admin, h(async (req, res) => {
   const { full_name, email, password, role } = req.body;
   if (!full_name || !email || !ROLES.includes(role) || String(password || '').length < 8)
     return res.status(400).json({ error: 'Name, email, role and an 8+ character password are required' });
+  const username = cleanUsername(req.body.username);   // NEW: optional
+  if (username) { const bad = usernameProblem(username, { reserved: false }); if (bad) return res.status(400).json({ error: bad }); }
   const { data, error } = await sb.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { full_name } });
   if (error) return res.status(400).json({ error: error.message });
-  await sb.from('users').update({ role }).eq('id', data.user.id); // profile row is created by the DB trigger
+  const profile = { role, ...(username ? { username } : {}) };
+  const { error: e2 } = await sb.from('users').update(profile).eq('id', data.user.id); // profile row is created by the DB trigger
+  if (e2) return res.status(400).json({ error: e2.code === '23505' ? 'That username is already taken (the account was created without it).' : e2.message });
   res.json({ id: data.user.id });
 }));
 
@@ -180,10 +185,15 @@ staff.patch('/admin/users/:id', admin, h(async (req, res) => {
   const { role, is_active } = req.body, p = {};
   if (ROLES.includes(role)) p.role = role;
   if (typeof is_active === 'boolean') p.is_active = is_active;
+  if ('username' in req.body) {   // NEW: an admin can set or clear anyone's username
+    const u = cleanUsername(req.body.username);
+    if (u === '') p.username = null;
+    else { const bad = usernameProblem(u, { reserved: false }); if (bad) return res.status(400).json({ error: bad }); p.username = u; }
+  }
   if (req.params.id === req.user.id && ((p.role && p.role !== 'admin') || p.is_active === false))
     return res.status(400).json({ error: "You can't demote or disable your own account" });
   const { error } = await sb.from('users').update(p).eq('id', req.params.id);
-  if (error) throw error;
+  if (error) { if (error.code === '23505') return res.status(400).json({ error: 'That username is already taken.' }); throw error; }
   if ('is_active' in p) await sb.auth.admin.updateUserById(req.params.id, { ban_duration: p.is_active ? 'none' : '876000h' });
   res.json({ ok: true });
 }));

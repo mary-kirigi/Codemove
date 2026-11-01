@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import './AuthLayout.css';
 import favicon from '../assets/favicon.jpeg';
@@ -14,18 +13,32 @@ export default function Login() {
 
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
 
+  // NEW: the server finds the email for the username and signs in; we then take over the session it returns.
+  async function usernameLogin(username) {
+    try {
+      const r = await fetch(`${import.meta.env.VITE_API_URL}/auth/username-login`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password: f.password }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) return { message: j.error || 'Could not log in. Please try again.' };
+      const { error } = await supabase.auth.setSession({ access_token: j.access_token, refresh_token: j.refresh_token });
+      return error;
+    } catch { return { message: 'Could not reach the server. Please try again.' }; }
+  }
+
   async function submit(e) {
     e.preventDefault();
     setMsg('');
     setMsgOk(false);
     setBusy(true);
-    const { error } = mode === 'in'
-      ? await supabase.auth.signInWithPassword({ email: f.email, password: f.password })
-      : await supabase.auth.signUp({
-          email: f.email,
-          password: f.password,
-          options: { data: { full_name: f.name } },
-        });
+    let error;
+    if (mode === 'in') {
+      const who = f.email.trim();
+      // NEW: an email signs in as before; anything without an "@" is treated as a username
+      if (who.includes('@')) ({ error } = await supabase.auth.signInWithPassword({ email: who, password: f.password }));
+      else error = await usernameLogin(who);
+    } else {
+      ({ error } = await supabase.auth.signUp({ email: f.email, password: f.password, options: { data: { full_name: f.name } } }));
+    }
     setBusy(false);
     if (error) setMsg(error.message);
     else if (mode === 'up') {
@@ -64,12 +77,14 @@ export default function Login() {
           )}
 
           <label className="auth-field">
-            <span>Email</span>
+            <span>{signingIn ? 'Email or username' : 'Email'}</span>
             <input
-              type="email"
+              type={signingIn ? 'text' : 'email'}
               value={f.email}
               onChange={set('email')}
-              placeholder="you@example.com"
+              placeholder={signingIn ? 'you@example.com or username' : 'you@example.com'}
+              autoComplete="username"
+              autoCapitalize="none"
               required
             />
           </label>
@@ -105,7 +120,7 @@ export default function Login() {
             CONTINUE WITH GOOGLE
           </button>
 
-          <p className="auth-footer"><a className="icon-link" href="/"><ArrowLeft aria-hidden="true" />About CodeMove Kenya</a></p>
+          <p className="auth-footer"><a href="/">← About CodeMove Kenya</a></p>
           <p className="auth-footer">
             {signingIn ? "Don't have an account? " : 'Already have an account? '}
             <a

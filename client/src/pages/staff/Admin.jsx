@@ -21,7 +21,7 @@ export default function Admin() {
       {/* CHANGED: new "Rankings" and "Quizzes" tabs */}
       <Tabs tabs={[['users', 'Users'], ['classes', 'Classes'], ['rankings', 'Rankings'], ['courses', 'Courses'], ['lessons', 'Add lessons'], ['quizzes', 'Quizzes'], ['account', 'My account']]} value={tab} onChange={setTab} />
       {tab === 'users' && <Users />}{tab === 'classes' && <AdminClasses />}{tab === 'courses' && <AdminCourses />}
-      {tab === 'lessons' && <><NewLesson /><p className="muted">To change an existing lesson, use Edit lessons in the Teacher portal.</p></>}
+      {tab === 'lessons' && <><NewLesson /><p className="muted">To change an existing lesson, use the Teacher portal → Edit lessons.</p></>}
       {tab === 'rankings' && <Rankings isAdmin />}{tab === 'quizzes' && <QuizManager isAdmin />}
       {tab === 'account' && <Account />}
     </>
@@ -30,7 +30,7 @@ export default function Admin() {
 
 function Users() {
   const [u, load, err] = useApi('/admin/users');
-  const [n, setN] = useState({ full_name: '', email: '', password: '', role: 'teacher' });
+  const [n, setN] = useState({ full_name: '', email: '', username: '', password: '', role: 'teacher' });
   const [msg, setMsg] = useState('');
   const act = async (fn) => { setMsg(''); try { await fn(); load(); } catch (e) { setMsg(e.message); } };
   if (!u) return <p>{err || 'Loading…'}</p>;
@@ -40,20 +40,22 @@ function Users() {
     <>
       {msg && <p className="note" role="status">{msg}</p>}
       <div className="card scroll"><table>
-        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
+        <thead><tr><th>Name</th><th>Email</th><th>Username</th><th>Role</th><th>Status</th><th></th></tr></thead>
         <tbody>{u.map((x) => (
           <tr key={x.id}><td>{x.full_name}</td><td>{x.email}</td>
+            <td>{x.username || '—'} <button className="btn ghost sm" onClick={() => { const v = prompt(`Username for ${x.full_name} (3–20 letters, numbers, . _ -). Leave empty to remove it.`, x.username || ''); if (v !== null) act(() => patch(x.id, { username: v })); }}>{x.username ? 'Change' : 'Set'}</button></td>   {/* NEW */}
             <td><select value={x.role} aria-label={`Role for ${x.full_name}`} onChange={(e) => act(() => patch(x.id, { role: e.target.value }))}>
               {ROLES.map((r) => <option key={r}>{r}</option>)}</select></td>
             <td><span className={`tag ${x.is_active ? '' : 'off'}`}>{x.is_active ? 'Active' : 'Disabled'}</span></td>
             <td><button className="btn ghost sm" onClick={() => { const p = prompt('New temporary password (8+ characters)'); if (p) act(() => api(`/admin/users/${x.id}/reset-password`, { method: 'POST', body: { password: p } }).then(() => setMsg(`Password reset for ${x.full_name}`))); }}>Reset password</button>{' '}
               <button className="btn ghost sm" onClick={() => act(() => patch(x.id, { is_active: !x.is_active }))}>{x.is_active ? 'Disable' : 'Enable'}</button></td></tr>))}</tbody>
       </table></div>
-      <form className="card" onSubmit={(e) => { e.preventDefault(); act(() => api('/admin/users', { method: 'POST', body: n }).then(() => setN({ ...n, full_name: '', email: '', password: '' }))); }}>
+      <form className="card" onSubmit={(e) => { e.preventDefault(); act(() => api('/admin/users', { method: 'POST', body: n }).then(() => setN({ ...n, full_name: '', email: '', username: '', password: '' }))); }}>
         <h3>Add a user</h3>
         <div className="two">
           <div><label className="f">Name<input required value={n.full_name} onChange={set('full_name')} /></label>
-            <label className="f">Email<input required type="email" value={n.email} onChange={set('email')} /></label></div>
+            <label className="f">Email<input required type="email" value={n.email} onChange={set('email')} /></label>
+            <label className="f">Username (optional)<input value={n.username} onChange={set('username')} placeholder="e.g. mary.k" maxLength={20} autoCapitalize="none" /></label></div>
           <div><label className="f">Role<select value={n.role} onChange={set('role')}>{ROLES.map((r) => <option key={r}>{r}</option>)}</select></label>
             <label className="f">Temporary password (8+)<input required minLength={8} value={n.password} onChange={set('password')} /></label></div>
         </div>

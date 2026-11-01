@@ -9,8 +9,10 @@ import { me } from './routes/me.js';
 import { authoring } from './routes/authoring.js'; // NEW: add courses/lessons + bulk student import
 import { quizzes } from './routes/quizzes.js';     // NEW: quiz authoring (teacher/admin)
 import { rankings } from './routes/rankings.js';   // NEW: graded rankings + student leaderboard
+import { usernameLogin } from './routes/usernameLogin.js'; // NEW: log in with a username
 
 const app = express();
+app.set('trust proxy', 1);   // NEW: behind a hosting proxy, so the login limiter sees the real visitor address
 // CHANGED: CLIENT_ORIGIN may hold several addresses separated by commas (e.g. your site + a test address); trailing slashes are ignored.
 const origins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',').map((o) => o.trim().replace(/\/+$/, ''));
 app.use(cors({ origin: origins }));
@@ -22,6 +24,7 @@ app.get('/health/db', async (_q, r) => {
   const { error } = await sb.from('courses').select('id').limit(1);
   r.status(error ? 500 : 200).json({ ok: !error });
 });
+app.use('/api/auth', usernameLogin);   // NEW: public – no login needed to ask for a username login
 app.use('/api', requireAuth, content, learning, me, staff, authoring, quizzes, rankings); // CHANGED: + quizzes, rankings
 
 // NEW: always answer with JSON (the client calls r.json()), e.g. for oversized or malformed bodies.

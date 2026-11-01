@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { api } from '../api';
+import UsernameField from './UsernameField';   // NEW
 
 // Staff can change their name and password (current password is re-checked first).
 export default function Account() {
@@ -30,7 +31,9 @@ export default function Account() {
         <div className="card"><h3>My details</h3>
           <label className="f">Name<input value={name} onChange={(e) => setName(e.target.value)} /></label>
           <p className="muted">Login email: {me.email}</p>
-          <button className="btn" onClick={saveName}>Save name</button></div>
+          <button className="btn" onClick={saveName}>Save name</button>
+          <hr />
+          <UsernameField /></div>   {/* NEW: set the username used to log in */}
         <div className="card"><h3>Change password</h3>
           <label className="f">Current password<input type="password" value={f.cur} onChange={set('cur')} /></label>
           <label className="f">New password (8+ characters)<input type="password" value={f.n1} onChange={set('n1')} /></label>
